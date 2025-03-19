@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Loader } from 'lucide-react';
 
-const GEOAPIFY_API_KEY = 'd4129129a04c4411b8e0ff855d78a9fa';
+const GEOAPIFY_API_KEY = '';
 
 const SearchBar = ({ query, onQueryChange, onSelect, isLoading }) => {
   const [suggestions, setSuggestions] = useState([]);
