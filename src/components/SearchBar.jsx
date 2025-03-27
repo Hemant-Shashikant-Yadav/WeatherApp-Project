@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Loader } from 'lucide-react';
 
-const GEOAPIFY_API_KEY = '';
 
 const SearchBar = ({ query, onQueryChange, onSelect, isLoading }) => {
   const [suggestions, setSuggestions] = useState([]);
@@ -19,7 +18,7 @@ const SearchBar = ({ query, onQueryChange, onSelect, isLoading }) => {
         const response = await fetch(
           `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
             query
-          )}&apiKey=${GEOAPIFY_API_KEY}`
+          )}&apiKey=${import.meta.env.REACT_APP_CITY_AUTOCOMPLETE_API_KEY}`
         );
         const data = await response.json();
         

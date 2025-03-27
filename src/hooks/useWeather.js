@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const API_KEY = ""; // Replace with your API key
+const API_KEY = import.meta.env.REACT_APP_WEATHER_API_KEY
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
 
 export const useWeather = () => {
