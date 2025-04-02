@@ -11,6 +11,8 @@ FROM node:18-alpine AS build
  
 # # Copy the rest of your application files
 # COPY . .
+
+# COPY Varibles .env
  
 # # Expose the port your app runs on
 # EXPOSE 3000
@@ -23,6 +25,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+COPY Varibles .env
 RUN npm run build
  
 # Production Stage
