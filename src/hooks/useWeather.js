@@ -30,14 +30,14 @@ export const useWeather = () => {
         const data = await response.json();
         setWeather({
           city: data.name,
+          description: data.weather[0].description,
+          wind_speed: data.wind.speed,
+          humidity: data.main.humidity,
+          main: data.weather[0].main,
           temp: data.main.temp,
           feels_like: data.main.feels_like,
           temp_min: data.main.temp_min,
           temp_max: data.main.temp_max,
-          humidity: data.main.humidity,
-          wind_speed: data.wind.speed,
-          main: data.weather[0].main,
-          description: data.weather[0].description,
         });
 
         // Fetch 5-day forecast
@@ -83,16 +83,40 @@ export const useWeather = () => {
       setSuggestions([]);
     }
   }, []);
-
+  const convertTemperature = (temp, fromUnit, toUnit) => {
+    if (fromUnit === toUnit) return temp;
+    return fromUnit === "metric"
+      ? (temp * 9/5) + 32 // Celsius to Fahrenheit
+      : (temp - 32) * 5/9; // Fahrenheit to Celsius
+  };
+  
+  
   const toggleUnit = useCallback(() => {
     setUnit((prev) => {
       const newUnit = prev === "metric" ? "imperial" : "metric";
       if (weather) {
-        fetchWeather({ city: weather.city });
+        setWeather((prevWeather) => ({
+          ...prevWeather,
+          temp: convertTemperature(prevWeather.temp, prev, newUnit),
+          feels_like: convertTemperature(prevWeather.feels_like, prev, newUnit),
+          temp_min: convertTemperature(prevWeather.temp_min, prev, newUnit),
+          temp_max: convertTemperature(prevWeather.temp_max, prev, newUnit),
+          // wind_speed remains unchanged
+        }));
+      }
+      if (forecast) {
+        setForecast((prevForecast) =>
+          prevForecast.map((day) => ({
+            ...day,
+            temp_min: convertTemperature(day.temp_min, prev, newUnit),
+            temp_max: convertTemperature(day.temp_max, prev, newUnit),
+          }))
+        );
       }
       return newUnit;
     });
-  }, [weather, fetchWeather]);
+  }, [weather, forecast]);
+  
 
   return {
     weather,
