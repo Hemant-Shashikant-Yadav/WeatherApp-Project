@@ -10,9 +10,11 @@ import WeatherCard from "./components/WeatherCard";
 import ForecastCard from "./components/ForecastCard";
 import SearchBar from "./components/SearchBar";
 import WeatherDetails from "./components/WeatherDetails";
+import WindyMap from "./components/WindyMap";
 import { useWeather } from "./hooks/useWeather";
 import { useTheme } from "./hooks/useTheme";
 import { useGeolocation } from "./hooks/useGeolocation";
+import { fetchGeoData } from "./hooks/useGeoData";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -29,6 +31,7 @@ function App() {
     unit,
     toggleUnit,
   } = useWeather();
+  const [coordinates, setCoordinates] = useState({ lon: null, lat: null });
 
   useEffect(() => {
     if (debouncedQuery) {
@@ -39,13 +42,18 @@ function App() {
   useEffect(() => {
     if (coords) {
       fetchWeather({ lat: coords.latitude, lon: coords.longitude });
+      setCoordinates({ lon: coords.longitude, lat: coords.latitude }); // Update Windy map coordinates
     }
   }, [coords, fetchWeather]);
 
   const handleSearch = useCallback(
-    (city) => {
+    async (city) => {
       setQuery(city);
       fetchWeather({ city });
+      const geoData = await fetchGeoData(city);
+      if (geoData) {
+        setCoordinates(geoData);
+      }
     },
     [fetchWeather]
   );
@@ -124,6 +132,13 @@ function App() {
                 <ForecastCard key={index} forecast={day} unit={unit} />
               ))}
             </div>
+          </div>
+        )}
+
+        {coordinates.lon && coordinates.lat && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Windy Map</h2>
+            <WindyMap lon={coordinates.lon} lat={coordinates.lat} />
           </div>
         )}
       </div>
